@@ -1,0 +1,107 @@
+\name{randomTF}
+\alias{randomTF}
+\alias{plot.palaeoSig}
+
+\title{
+Proportion of variance in the fossil data explained by an environmental reconstruction
+}
+\description{
+Calculate the proportion of variance in the fossil data explained by an environmental reconstruction with a constrained ordination. This value is compared with a null distribution calculated as the proportion of variance in the fossil data explained by reconstructions from transfer functions trained on random data.
+}
+
+\usage{
+randomTF(spp, env, fos, n = 99, fun, col, condition, autosim, ord = rda,...)
+plot.palaeoSig(x, names, pos=2,...)
+}
+
+\arguments{
+  \item{spp}{
+Data frame of modern training set species data, transformed as required for example with sqrt
+}
+  \item{env}{
+Data frame of training set environmental variables
+}
+  \item{fos}{
+Data frame of fossil species data, with same species codes and transformations as spp
+}
+  \item{n}{
+number of random training sets
+}
+  \item{fun}{
+Transfer function method. Additional argument can be passed with ...
+}
+  \item{col}{
+Some transfer functions return more than one column of results, for example with different WAPLS components. col selects which column to use. See the relevant transfer function method help file.
+}
+  \item{condition}{
+Optional data frame of reconstructions to partial out when testing if multiple independent reconstructions are possible.
+}
+  \item{autosim}{
+Optional data frame of random values. This is useful if the training set is spatially autocorrelated and the supplied data frame contains autocorrelated random variables. If autosim is missing, the transfer functions are trained on random variables drawn from a uniform distribution.
+}
+  \item{ord}{
+Constrained ordination method to use. rda is the default, cca should also work. capscale won't work without modifications to the code (or a wrapper).
+}
+  \item{\dots}{
+Other arguments to the transfer function. For example to change the distance metric in MAT. Also extra arguments to plot.
+}
+  \item{x}{
+Output from randomTF
+}
+  \item{names}{
+Names of environmental variables
+}
+  \item{pos}{
+Position to plot environmental names,. Use this to improve clarity of the figure
+}
+
+}
+\details{
+The function calculates the proportion of variance in the fossil data explained by the transfer function reconstruction. This is compared with a null distribution of the proportion of variance explained by reconstructions based on random environmental variables. Reconstructions can be partialled out to test if multiple reconstructions are statistically significant. If the environment is spatially autocorrelated, a red-noise null should be used instead of the default white noise null. The red noise environmental variables can be generated with the gstat library. 
+Any transfer function in the rioja library can be used. 
+}
+\value{
+A list with components
+ \item{PCA}{The unconstrained ordination of the fossil data.}
+\item{preds}{A list of the containing the reconstructions for each environmental variable.}
+\item{MAX}{Proportion of the variance explained by the first axis of the unconstrained ordination. This is the maximum amount that a reconstruction of a single variable can explain.}
+\item{EX}{The proportion of the variance in the fossil data explained by each reconstruction.}
+\item{sim.ex}{The proportion of variance explained by each of the random environmental variables.}
+\item{sig}{The p-value of each reconstruction.}
+
+
+
+}
+\references{
+Telford, R.J. and Birks, H.J.B. (In Revision) A novel method for assessing the statistical significance of quantitative reconstructions inferred from biotic assemblages. Quaternary Science Reviews. 
+}
+\author{
+Richard Telford \email{richard.telford@bio.uib.no}
+}
+\note{
+If there are only a few fossil levels, \code{\link{obs.cor}} might have more power. If there are few taxa, tests on MAT reconstructions have more statistical power than those based on WA.
+}
+
+
+\seealso{
+\code{\link{obs.cor}},\code{\link{WA}},\code{\link{MAT}},\code{\link{WAPLS}},\code{\link{rda}},\code{\link{cca}} 
+}
+\examples{
+
+data(SWAP)
+data(RLGH)
+
+rlghr<-randomTF(spp=sqrt(SWAP$spec), env=data.frame(pH=SWAP$pH), fos=sqrt(RLGH$spec), n=99, fun=WA, col=1)
+rlghr.mat<-randomTF(spp=SWAP$spec, env=data.frame(pH=SWAP$pH), fos=RLGH$spec, n=99, fun=MAT, col=1)
+rlghr$sig
+rlghr.mat$sig
+
+plot.palaeoSig(rlghr, "pH")
+
+plot.palaeoSig(rlghr.mat, "pH")
+}
+
+\keyword{multivariate}
+\keyword{htest}
+\keyword{hplot}
+

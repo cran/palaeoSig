@@ -1,0 +1,14 @@
+citHeader("To cite package 'palaeoSig' in publications use:")
+if(!exists("meta") || is.null(meta)) meta <- packageDescription("palaeoSig")
+year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", meta$Date)
+vers <- paste("R package version", meta$Version)
+citEntry(entry="Manual",
+title = "palaeoSig: Significance Tests of Quantitative Palaeoenvironmental Reconstructions",
+author = personList(as.person("Richard J. Telford")),
+year = year,
+note = vers,
+textVersion =
+paste("Richard J. Telford (",
+year,
+") palaeoSig: Significance Tests of Quantitative Palaeoenvironmental Reconstructions. ",
+vers, ".", sep=""))
