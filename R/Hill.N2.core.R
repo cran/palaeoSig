@@ -1,6 +1,6 @@
 Hill.N2.core <-
 function(spp){
- res<-Hill.N2(matrix(colSums(spp)))
- return(res)
+ hn2<-Hill.N2(spp, margin=1)
+ return(quantile(hn2,prob=c(0,.25,.5)))
 }
 

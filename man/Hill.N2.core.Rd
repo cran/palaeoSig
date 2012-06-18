@@ -20,9 +20,10 @@ Uses \code{\link{Hill.N2}} from the rioja package
 
 }
 \value{
-Effective number of species
+Minimum, first quartile and median effective number of species
 }
 \references{
+Hill, M. O. (1973) Diversity and evenness: a unifying notation and its consequences. \emph{Ecology} \bold{54}: 427--432. 
 
 }
 \author{

@@ -11,7 +11,7 @@ Calculate the proportion of variance in the fossil data explained by an environm
 
 \usage{
 randomTF(spp, env, fos, n = 99, fun, col, condition, autosim, ord = rda,...)
-plot.palaeoSig(x, names, pos=2,...)
+\method{plot}{palaeoSig}(x, vnames, top = 0.7, adj = c(0, 0.5),...)
 }
 
 \arguments{
@@ -48,17 +48,22 @@ Other arguments to the transfer function. For example to change the distance met
   \item{x}{
 Output from randomTF
 }
-  \item{names}{
+  \item{vnames}{
 Names of environmental variables
 }
-  \item{pos}{
-Position to plot environmental names,. Use this to improve clarity of the figure
+  \item{top}{
+Proportion of the figure below the environmental name labels.
+}
+
+  \item{adj}{
+Adjust the position that the environmental names are plotted at.
 }
 
 }
 \details{
-The function calculates the proportion of variance in the fossil data explained by the transfer function reconstruction. This is compared with a null distribution of the proportion of variance explained by reconstructions based on random environmental variables. Reconstructions can be partialled out to test if multiple reconstructions are statistically significant. If the environment is spatially autocorrelated, a red-noise null should be used instead of the default white noise null. The red noise environmental variables can be generated with the gstat library. 
-Any transfer function in the rioja library can be used. 
+The function calculates the proportion of variance in the fossil data explained by the transfer function reconstruction. This is compared with a null distribution of the proportion of variance explained by reconstructions based on random environmental variables. Reconstructions can be partialled out to test if multiple reconstructions are statistically significant. If the environment is spatially autocorrelated, a red-noise null should be used instead of the default white noise null. The red noise environmental variables can be generated with the \pkg{gstat} package.
+ 
+Any transfer function in the \pkg{rioja} package can be used. 
 }
 \value{
 A list with components
@@ -73,26 +78,26 @@ A list with components
 
 }
 \references{
-Telford, R.J. and Birks, H.J.B. (In Revision) A novel method for assessing the statistical significance of quantitative reconstructions inferred from biotic assemblages. Quaternary Science Reviews. 
+Telford, R. J. and Birks, H. J. B. (2011) A novel method for assessing the statistical significance of quantitative reconstructions inferred from biotic assemblages. \emph{Quaternary Science Reviews} \bold{30}: 1272--1278. DOI: 10.1016/j.quascirev.2011.03.002
 }
 \author{
 Richard Telford \email{richard.telford@bio.uib.no}
 }
 \note{
-If there are only a few fossil levels, \code{\link{obs.cor}} might have more power. If there are few taxa, tests on MAT reconstructions have more statistical power than those based on WA.
+If there are only a few fossil levels, \code{\link{obs.cor}} might have more power. If there are few taxa, tests on \code{\link{MAT}} reconstructions have more statistical power than those based on \code{\link{WA}}.
 }
 
 
 \seealso{
-\code{\link{obs.cor}},\code{\link{WA}},\code{\link{MAT}},\code{\link{WAPLS}},\code{\link{rda}},\code{\link{cca}} 
+\code{\link{obs.cor}}, \code{\link{WA}}, \code{\link{MAT}}, \code{\link{WAPLS}}, \code{\link{rda}}, \code{\link{cca}} 
 }
 \examples{
 
 data(SWAP)
 data(RLGH)
 
-rlghr<-randomTF(spp=sqrt(SWAP$spec), env=data.frame(pH=SWAP$pH), fos=sqrt(RLGH$spec), n=99, fun=WA, col=1)
-rlghr.mat<-randomTF(spp=SWAP$spec, env=data.frame(pH=SWAP$pH), fos=RLGH$spec, n=99, fun=MAT, col=1)
+rlghr <- randomTF(spp = sqrt(SWAP$spec), env = data.frame(pH = SWAP$pH), fos = sqrt(RLGH$spec), n = 99, fun = WA, col = 1)
+rlghr.mat <- randomTF(spp = SWAP$spec, env = data.frame(pH = SWAP$pH), fos = RLGH$spec, n = 99, fun = MAT, col = 1)
 rlghr$sig
 rlghr.mat$sig
 

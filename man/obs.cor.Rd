@@ -1,26 +1,19 @@
 \name{obs.cor}
 \alias{obs.cor}
-\alias{sim.cor}
 \alias{plot.obscor}
-\alias{plot.simcor}
-\alias{obscor.sig}
+\alias{identify.obscor}
 
 \title{
 Weighted correlation between weighted averaging optima and constrained ordination species scores.
 }
 \description{
 obs.cor calculates the weighted correlation between the species weighted average optima and the axis one species scores of an ordination constrained by the WA reconstruction. 
-sim.cor calculates a null distribution of this statistic.
-plot.simcor plots a histogram showing the null distribution and a vertical line showing the observed weighted correlation.
-plot.obscor plots the species weighted average optima against the axis 1 constrained ordination scores
-obscor.sig calculates the p value of the observed correlation.
 }
 \usage{
-obs.cor(spp, env, fos, ord = rda)
-sim.cor(spp, env, fos, n = 99, ord = rda) 
-plot.obscor(x, xlab = "WA optima", ylab = "RDA scores", f = 1, ...) 
-plot.simcor(x, sim,...) 
-obscor.sig(x, sim) 
+obs.cor(spp, env, fos, ord = rda, n = 99, min.occur = 1)
+\method{plot}{obscor}(x, xlab, ylab, f = 5, which = 1, label = "env", abun="abun.calib", ...)
+\method{identify}{obscor}(x, labels, ...)
+
 }
 
 
@@ -40,42 +33,67 @@ Constrained ordination. The default is rda. cca will work with the present code.
   \item{n}{
 Number of random trials
 }
+  \item{min.occur}{
+Minimum number of occurrances of species in the species and fossil data.
+}
+
   \item{x}{
-Output of obs.cor
+An obscor object.
 }
   \item{xlab}{
-X-axis label
+X-axis label if the default is unsatisfactory.
 }
   \item{ylab}{
-Y-axis label
-}
-  \item{\dots}{
-Other arguments to plot
+Y-axis label if the default is unsatisfactory.
 }
   \item{f}{
-Scale factor for the points
+Scale factor for the abundances, the maximum cex of points for the which=1 plot.
 }
-  \item{sim}{
-Output of sim.cor
+  \item{which}{
+Which type of plot. which = 1 gives a plot of RDA scores against species optima. which = 2 gives a histogram showing the null distribution of correlations between RDA scores and species optima, together with the observed correlation. 
+}
+  \item{label}{
+Label for the observed correlation with which = 2
+}
+  \item{abun}{
+Which species weighting required for plots. See details
+}
+
+  \item{labels}{
+Labels for the points in identify. By default, the species names from intersection of colnames(spp) and colnames(fos) are used.  
+}
+
+  \item{\dots}{
+Other arguments to plot or identify
 }
 
 }
 \details{
+Obs.cor calculates the weighted correlation between the species WA optima in the calibration set and their ordination axis one scores in the fossil data. Seven different weights for the species are implimented. 
+  "abun.fos" - weight by the mean abundance in the fossil data.
+  "abun.calib" - weight by the mean abundance in the calibration data
+  "abun.joint" - weight by the product of the mean abundance in the fossil and calibration data
+  "n2.fos" - weight by the effective number of occurences (Hill's N2) of each species in the fossil data 
+  "n2.calib" - weight by the effective number of occurences (Hill's N2) of each species in the calibration data 
+  "n2.joint" - weight by the product of n2.calib and n2.fos
+  "unweighted" - all species recieve same weight. This is unlikely to be the best option but is included for completeness. 
+  It is unclear which of these weights is likely to be best, research is in progress.
 A square root transformation of the species data is often useful. n=99 is too small in practice to give a smooth histogram of the null model. n=999 is better.
 }
 \value{
 
-obs.cor returns a list
- \item{x}{Data.frame with columns Optima, RDA1 and abun containing the species optima, ordination axis 1 scores, and mean abundance respectively}
- \item{res}{List with components wc and cc containing the weighted correlation and unweighted correlation between species optima and ordination scores respectively}
+obs.cor returns an obscor object, which is a list
+ \item{ob}{Obsevered correlation. Data.frame with columns Optima, RDA1 and abun containing the species optima, ordination axis 1 scores, and abundance used to weight the species respectively and a vectorcontaining the weighted and unweighted correlations between species optima and ordination scores.}
+ \item{sim}{Matrix with the correlation between species weighted average optima and ordination scores in the first column and the weighted correlation in the second column. Each row represents a different random environmental variable.
+}
+ \item{sigs}{p-value for the observed correlation between species weighted average optima and ordination scores for each of the weights.}
 
-sim.cor returns a matrix with the correlation between species weighted average optima and ordination scores in the first column and the weighted correlation in the second column. Each row represents a different random environmental variable.
 
-obscor.sig returns the p-value for the observed correlation between species weighted average optima and ordination scores.
 }
 
 \references{
-Telford, R.J. and Birks, H.J.B. (In Revision) A novel method for assessing the statistical significance of quantitative reconstructions inferred from biotic assemblages. Quaternary Science Reviews.
+Telford, R. J. and Birks, H. J. B. (2011) A novel method for assessing the statistical significance of quantitative reconstructions inferred from biotic assemblages. \emph{Quaternary Science Reviews} \bold{30}: 1272--1278. DOI: 10.1016/j.quascirev.2011.03.002
+
 }
 \author{
 Richard Telford \email{richard.telford@bio.uib.no}
@@ -85,20 +103,17 @@ The test of the weighted correlation between species optima and ordination axis 
 }
 
 \seealso{
-\code{\link{randomTF}}\code{\link{WA}},\code{\link{MAT}},\code{\link{WAPLS}},\code{\link{rda}},\code{\link{cca}}
+\code{\link{randomTF}}, \code{\link{WA}}, \code{\link{MAT}}, \code{\link{WAPLS}}, \code{\link{rda}}, \code{\link{cca}}
 }
 \examples{
 data(SWAP)
 data(RLGH)
 
+rlgh.obs <- obs.cor(spp = sqrt(SWAP$spec), env = SWAP$pH, fos = sqrt(RLGH$spec))
+rlgh.obs$sig
+plot(rlgh.obs, which=1)
+plot(rlgh.obs, which=2)
 
-rlgh.obs<-obs.cor(spp=sqrt(SWAP$spec),env=SWAP$pH,fos=sqrt(RLGH$spec))
-rlgh.sim<-sim.cor(spp=sqrt(SWAP$spec),env=SWAP$pH,fos=sqrt(RLGH$spec))  #slow
-
-plot.obscor(rlgh.obs)
-plot.simcor(rlgh.obs,rlgh.sim)
-
-obscor.sig(rlgh.obs,rlgh.sim)
 }
 
 \keyword{multivariate}
