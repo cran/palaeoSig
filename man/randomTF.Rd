@@ -1,6 +1,8 @@
 \name{randomTF}
 \alias{randomTF}
 \alias{plot.palaeoSig}
+\alias{ModelMaker}
+\alias{randomTFmm}
 
 \title{
 Proportion of variance in the fossil data explained by an environmental reconstruction
@@ -11,7 +13,9 @@ Calculate the proportion of variance in the fossil data explained by an environm
 
 \usage{
 randomTF(spp, env, fos, n = 99, fun, col, condition, autosim, ord = rda,...)
-\method{plot}{palaeoSig}(x, vnames, top = 0.7, adj = c(0, 0.5),...)
+ModelMaker(spp, env, n=99, fun, autosim, ...)
+randomTFmm(fos, modelList, col, condition, ord=rda, ...)
+\method{plot}{palaeoSig}(x, vnames, top = 0.7, adj = c(0, 0.5), p.val=0.95, ...)
 }
 
 \arguments{
@@ -45,6 +49,10 @@ Constrained ordination method to use. rda is the default, cca should also work. 
   \item{\dots}{
 Other arguments to the transfer function. For example to change the distance metric in MAT. Also extra arguments to plot.
 }
+  \item{modelList}{
+Output of ModelMaker
+}
+
   \item{x}{
 Output from randomTF
 }
@@ -58,12 +66,18 @@ Proportion of the figure below the environmental name labels.
   \item{adj}{
 Adjust the position that the environmental names are plotted at.
 }
+  \item{p.val}{
+P value to draw a line vertical line at (with which=2)  
+}
 
 }
 \details{
 The function calculates the proportion of variance in the fossil data explained by the transfer function reconstruction. This is compared with a null distribution of the proportion of variance explained by reconstructions based on random environmental variables. Reconstructions can be partialled out to test if multiple reconstructions are statistically significant. If the environment is spatially autocorrelated, a red-noise null should be used instead of the default white noise null. The red noise environmental variables can be generated with the \pkg{gstat} package.
  
-Any transfer function in the \pkg{rioja} package can be used. 
+Any transfer function in the \pkg{rioja} package can be used. Other methods (e.g. random forests) can be used by making a wrapper function.
+
+If several reconstructions using the same training set are being tested, it can be much faster to make the models once, and use them repeatedly. This can be done with \code{ModelMaker} and \code{randomTFmm}. \code{ModelMaker} does not work with MAT.
+
 }
 \value{
 A list with components
@@ -74,6 +88,7 @@ A list with components
 \item{sim.ex}{The proportion of variance explained by each of the random environmental variables.}
 \item{sig}{The p-value of each reconstruction.}
 
+ModelMaker returns a list of models.
 
 
 }
@@ -97,13 +112,9 @@ data(SWAP)
 data(RLGH)
 
 rlghr <- randomTF(spp = sqrt(SWAP$spec), env = data.frame(pH = SWAP$pH), fos = sqrt(RLGH$spec), n = 99, fun = WA, col = 1)
-rlghr.mat <- randomTF(spp = SWAP$spec, env = data.frame(pH = SWAP$pH), fos = RLGH$spec, n = 99, fun = MAT, col = 1)
 rlghr$sig
-rlghr.mat$sig
-
 plot.palaeoSig(rlghr, "pH")
 
-plot.palaeoSig(rlghr.mat, "pH")
 }
 
 \keyword{multivariate}

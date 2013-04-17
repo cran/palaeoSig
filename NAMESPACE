@@ -1,4 +1,4 @@
-export(anamorph, Hill.N2.core, jointsig, mat.h,  multi.mat,obs.cor,  plot.js, plot.obscor,identify.obscor, plot.palaeoSig, plot.RNE, randomTF, rne, rotate, simulateSpatial)
+export(anamorph, Hill.N2.core, jointsig, mat.h,  multi.mat,obs.cor,  plot.js, plot.obscor,identify.obscor, plot.palaeoSig, plot.RNE, randomTF, ModelMaker, randomTFmm, rne, rotate, simulateSpatial)
 import(vegan)
 import(gstat)
 import(rioja)

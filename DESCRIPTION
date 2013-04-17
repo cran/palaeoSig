@@ -1,8 +1,8 @@
 Package: palaeoSig
 Type: Package
 Title: Significance tests for palaeoenvironmental reconstructions
-Version: 1.1-1
-Date: 2012-06-18
+Version: 1.1-2
+Date: 2013-04-17
 Author: Richard Telford
 Maintainer: Richard Telford <Richard.Telford@bio.uib.no>
 Depends: rioja, vegan, TeachingDemos, gstat, fields, mapproj
@@ -10,6 +10,7 @@ Description: Tests if quantitative palaeoenvironmental reconstructions
         are statistically significant.
 License: GPL-3
 LazyLoad: yes
-Packaged: 2012-06-20 14:36:32 UTC; gbsrt
+Packaged: 2013-04-18 17:13:53 UTC; gbsrt
+NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2012-06-20 14:46:54
+Date/Publication: 2013-04-18 21:21:45

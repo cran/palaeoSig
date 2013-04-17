@@ -22,15 +22,17 @@ function(spp,env,fos,n=99,fun,col, condition, autosim, ord=rda,...){#reconstruct
   obs<-lapply(env,function(ev){
     Mod<-fun(spp, ev,...)
     Pred<-predict(Mod,fos)
+    if(is.list(Pred))p<-Pred$fit[,col]
+    else p<-Pred
     if(!partial){
-      RDA<-ord(fos~Pred$fit[,col])
+      RDA<-ord(fos~p)
     }else{
-      form<-formula(paste("fos~Pred$fit[,col]+Condition(",paste(names(condition), collapse="+"),")"))
+      form<-formula(paste("fos~p+Condition(",paste(names(condition), collapse="+"),")"))
       RDA<-ord(form, data=condition)
     }
     EX<- RDA$CCA$tot.chi/RDA$tot.chi
     EIG1<-RDA$CA$eig[1]/RDA$tot.chi
-    list(EX=EX, pred=Pred$fit[,col], EIG1=EIG1, clas=class(Mod), mod=Pred)
+    list(EX=EX, pred=p, EIG1=EIG1, clas=class(Mod), mod=Pred)
   })
   if(missing(autosim))rnd<-matrix(runif(nrow(spp)*n),ncol=n)
   else rnd<-autosim
@@ -49,7 +51,8 @@ function(spp,env,fos,n=99,fun,col, condition, autosim, ord=rda,...){#reconstruct
   else{
     sim.ex<-apply(rnd,2,function(sim){
          m<-fun(spp, sim,...)
-         p<-predict(m,fos)$fit[,col]
+         p<-predict(m,fos)
+          if(is.list(p))p<-p$fit[,col]
          if(!partial){
             r<-ord(fos~p)
          }else{

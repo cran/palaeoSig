@@ -2,7 +2,45 @@
 \title{palaeoSig News}
 \encoding{UTF-8}
 
-\section{Changes in version 1.1}{
+\section{Changes in version 1.1-2}{
+
+  \subsection{GENERAL}{
+    \itemize{
+      
+      \item Bug fixes and minor improvement.
+      
+    }
+  } % end GENERAL
+  
+  \subsection{NEW FUNCTIONS}{
+    \itemize{      
+      \item \code{ModelMaker} and \code{randomTFmm} allows models for randomTF to be fitted once and used for several reconstructions. This can be much faster, but does not work with MAT.
+      
+    }
+  } % end NEW FUNCTIONS
+
+  \subsection{MODIFIED FUNCTIONS}{
+    \itemize{      
+      \item \code{plot.palaeoSig} p-value highlighted can be selected.
+      \item \code{plot.obscor} p-value highlighted can be selected.
+      \item \code{randomTF} Modified to accept predictions in a vector. 
+      
+      
+      
+    }
+  } % end NEW FUNCTIONS
+
+  \subsection{BUG FIXES}{
+    \itemize{      
+      \item \code{obs.cor} bug when species not in same order in calibration set and fossil data fixed.
+    }
+  } % end NEW FUNCTIONS
+
+}% end VERSTION 1.1-2
+  
+
+
+\section{Changes in version 1.1-1}{
 
   \subsection{GENERAL}{
     \itemize{

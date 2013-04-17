@@ -11,7 +11,7 @@ obs.cor calculates the weighted correlation between the species weighted average
 }
 \usage{
 obs.cor(spp, env, fos, ord = rda, n = 99, min.occur = 1)
-\method{plot}{obscor}(x, xlab, ylab, f = 5, which = 1, label = "env", abun="abun.calib", ...)
+\method{plot}{obscor}(x, xlab, ylab, f = 5, which = 1, label = "env", abun="abun.calib", p.val=0.95, ...)
 \method{identify}{obscor}(x, labels, ...)
 
 }
@@ -58,7 +58,9 @@ Label for the observed correlation with which = 2
   \item{abun}{
 Which species weighting required for plots. See details
 }
-
+  \item{p.val}{
+P value to draw a line vertical line at (with which=2)  
+}
   \item{labels}{
 Labels for the points in identify. By default, the species names from intersection of colnames(spp) and colnames(fos) are used.  
 }

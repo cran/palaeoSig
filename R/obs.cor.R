@@ -25,6 +25,9 @@
 obs.cor<-function (spp, env, fos, ord = rda, n=99, min.occur=1){
     spp<-spp[,colSums(spp>0)>=min.occur]
     fos<-fos[,colSums(fos>0)>=min.occur]
+    
+    spp<-spp[,order(colnames(spp))]
+    fos<-fos[,order(colnames(fos))]
  
     mod <- WA(spp, env)
     pred <- predict(mod, fos)$fit[, 1]

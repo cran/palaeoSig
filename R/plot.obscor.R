@@ -5,7 +5,7 @@
 
 
 
-plot.obscor<-function (x, xlab, ylab, f=5, which=1, label="env",abun="abun.calib",...) 
+plot.obscor<-function (x, xlab, ylab, f=5, which=1, label="env",abun="abun.calib",p.val=0.95,...) 
 {
     weightings <- c("abun.fos", "abun.calib", "abun.joint", "n2.fos", "n2.calib", "n2.joint", "unweighted")
     w <- pmatch(abun, weightings)
@@ -30,7 +30,7 @@ plot.obscor<-function (x, xlab, ylab, f=5, which=1, label="env",abun="abun.calib
     ob<-x$ob$res[w]
     hist(sim, xlim = range(c(sim,ob)), xlab = xlab, col = "grey80", border = NA, ...)
     abline(v = ob, col = 1)
-    abline(v = quantile(sim, prob=.95), col = 2, lty=3)
+    abline(v = quantile(sim, prob=p.val), col = 2, lty=3)
     
     text(ob, par()$usr[4] * 0.9, label = label, srt = 90, pos = 2)
     box()
