@@ -107,11 +107,12 @@ If there are only a few fossil levels, \code{\link{obs.cor}} might have more pow
 \code{\link{obs.cor}}, \code{\link{WA}}, \code{\link{MAT}}, \code{\link{WAPLS}}, \code{\link{rda}}, \code{\link{cca}} 
 }
 \examples{
-
+require(rioja)
 data(SWAP)
 data(RLGH)
 
-rlghr <- randomTF(spp = sqrt(SWAP$spec), env = data.frame(pH = SWAP$pH), fos = sqrt(RLGH$spec), n = 99, fun = WA, col = 1)
+rlghr <- randomTF(spp = sqrt(SWAP$spec), env = data.frame(pH = SWAP$pH), 
+    fos = sqrt(RLGH$spec), n = 99, fun = WA, col = 1)
 rlghr$sig
 plot.palaeoSig(rlghr, "pH")
 

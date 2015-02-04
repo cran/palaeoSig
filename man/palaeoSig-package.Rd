@@ -17,12 +17,13 @@ This package includes:
  
  graphical methods to show autocorrelation in transfer functions (\code{\link{rne}})                                       
  
- null model test of transfer functions performance in a spatially autocorrelated environment (\code{\link{simulateSpatial}}) 
+ null model test of transfer functions performance in a spatially autocorrelated environment - see vignette. 
  
  h-block cross-validation for MAT (\code{\link{mat.h}}) - the plan is to move this to \pkg{rioja}                        
  
 Several functions have from \pkg{autocorTF} version 1.0 and \pkg{palaeoSig} version 1.0 have been rewritten or replaced with more flexible or user friendly functions. See \code{news(package="palaeoSig")} for details.
 
+See also my blog at https://quantpalaeo.wordpress.com/
 
 \tabular{ll}{
 Package: \tab palaeoSig\cr

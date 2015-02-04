@@ -46,17 +46,19 @@ rne(y, env, geodist,fun, neighbours, subsets = c(1,0.75, 0.5, 0.25, 0.1), ...)
   data(arctic.pollen)
 
   \dontshow{
-    #using just the first 100 sites so that code runs in an reasonable time
-    arctic.dist <- rdist.earth(cbind(arctic.env$Longitude, arctic.env$Latitude)[1:30,], miles = FALSE)
+    #using just the first 20 sites so that code runs in an reasonable time
+    arctic.dist <- rdist.earth(cbind(arctic.env$Longitude, arctic.env$Latitude)[1:20,], miles = FALSE)
     
-    arctic.rne <- rne(y = arctic.pollen[1:30,], env = arctic.env$tjul[1:30], geodist = arctic.dist, fun = MAT, neighbours = c(0,200), subsets = c(1,.5), k = 5)
+    arctic.rne <- rne(y = arctic.pollen[1:20,], env = arctic.env$tjul[1:20], geodist = arctic.dist, fun = MAT, neighbours = c(0,200), subsets = c(1,.5), k = 5)
     plot(arctic.rne)
   }
   \donttest{
-    #using just the first 100 sites so that code runs in an reasonable time, but still slow
-    arctic.dist <- rdist.earth(cbind(arctic.env$Longitude, arctic.env$Latitude)[1:100,], miles = FALSE)
+    #using just the first 100 sites so code runs in an reasonable time, but still slow
+    arctic.d <- rdist.earth(arctic.env[1:100,c("Longitude","Latitude")], miles = FALSE)
     
-    arctic.rne <- rne(y = arctic.pollen[1:100,], env = arctic.env$tjul[1:100], geodist = arctic.dist, fun = MAT, neighbours = c(0,50,200), subsets = c(1,.5,.1), k = 5)
+    arctic.rne <- rne(y = arctic.pollen[1:100,], env = arctic.env$tjul[1:100],
+        geodist = arctic.d, fun = MAT, neighbours = c(0,50,200), 
+        subsets = c(1,.5,.1), k = 5)
     plot(arctic.rne)
   }
 

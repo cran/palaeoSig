@@ -59,7 +59,6 @@ function(spp,env,fos,n=99,fun,col, condition, autosim, ord=rda,...){#reconstruct
             form<-formula(paste("fos~p+Condition(",paste(names(condition), collapse="+"),")"))
             r<-ord(form, data=condition)
          }
-         r<-ord(fos~p)
          r$CCA$tot.chi/r$tot.chi
     })
   }

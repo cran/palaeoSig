@@ -10,7 +10,7 @@ mat.h(y, x, noanalogues, geodist, thresh)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{y}{ Community data }
+  \item{y}{ Community data or distance matrix }
   \item{x}{ Environmental variable }
   \item{noanalogues}{ Number of analogues }
   \item{geodist}{ Geographical distances }
@@ -18,6 +18,7 @@ mat.h(y, x, noanalogues, geodist, thresh)
 }
 \details{
 Analogues closer than the geographic distance specified by thresh are not excluded, reducing the effect of spatial autocorrelation on the performance statistics. 
+H-block cross-validation is also implemented in the \pkg{rioja} package. This function can be faster if used many times as it can take a pre-calculated distance matrix.
   
 }
 \value{
@@ -28,33 +29,21 @@ Analogues closer than the geographic distance specified by thresh are not exclud
 
 \examples{
 
-require(mapproj)
-require(gstat)
+require(fields)
 data(arctic.env)
 data(arctic.pollen)
-try({
-sinproj <- mapproject(x = arctic.env$Longitude, y = arctic.env$Latitude, proj = "sinusoidal", ori = rotate(arctic.env$Lat, arctic.env$Long))
-radius <- 6372
-arctic.pos <- data.frame(x=sinproj$x*radius, y=sinproj$y*radius)
-arctic.dist <- dist(arctic.pos)
+arctic.dist <- rdist.earth(arctic.env[,c("Longitude", "Latitude")], miles=FALSE)
 
-recon <- wajack(sqrt(arctic.pollen), arctic.env$tjul)
-recon.resid <- recon-arctic.env$tjul
-recon.resid.detrend <- resid(loess(recon.resid ~ arctic.env$tjul, span = .4))
 
-resid.variogram <- variogram(recon.resid.detrend ~ 1, ~x+y, data = arctic.pos)
-(resid.vModel <- fit.variogram(resid.variogram, model = vgm(2, "Sph", 300, 1)))
-plot(resid.variogram, resid.vModel)
+h0 <- mat.h(arctic.pollen, arctic.env$tjul, noanalogues = 10, arctic.dist, thresh=-1)
+h100 <- mat.h(arctic.pollen, arctic.env$tjul, noanalogues = 10, arctic.dist, thresh=100)
 
-mat.recon <- mat.h(arctic.pollen, arctic.env$tjul, noanalogues = 10, arctic.dist, -1)
-mat.reconH <- mat.h(arctic.pollen, arctic.env$tjul, noanalogues = 10, arctic.dist, resid.vModel$range[2])
+cor(h0, arctic.env$tjul)
+cor(h100, arctic.env$tjul)
 
-cor(mat.recon, arctic.env$tjul)
-cor(mat.reconH, arctic.env$tjul)
+sqrt(mean((h0 - arctic.env$tjul)^2))
+sqrt(mean((h100 - arctic.env$tjul)^2))
 
-sqrt(mean((mat.recon - arctic.env$tjul)^2))
-sqrt(mean((mat.reconH - arctic.env$tjul)^2))
-})
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

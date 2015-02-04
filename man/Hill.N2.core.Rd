@@ -38,6 +38,7 @@ If the effective number of species is small, WA based reconstructions are unlike
 \code{\link{Hill.N2}}
 }
 \examples{
+require(rioja)
 data(RLGH)
 
 Hill.N2.core(RLGH$spec)

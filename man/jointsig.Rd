@@ -66,7 +66,7 @@ A list with components
 
 }
 \references{
-Unpublished method - use with caution.
+Unpublished method - use with caution. Can give spurious results with weighted averaging.
 }
 \author{
 Richard Telford \email{richard.telford@bio.uib.no}
@@ -77,11 +77,13 @@ Richard Telford \email{richard.telford@bio.uib.no}
 \code{\link{randomTF}},\code{\link{obs.cor}} 
 }
 \examples{
-
+require(rioja)
 data(SWAP)
 data(RLGH)
 
-rlgh.js <- jointsig(spp = sqrt(SWAP$spec), fos = sqrt(RLGH$spec), var1 = SWAP$pH, var2 = sample(SWAP$pH), method = "randomTF", n = 99, r = 32, fun = WA, col = 1)#nonsence second variable
+rlgh.js <- jointsig(spp = sqrt(SWAP$spec), fos = sqrt(RLGH$spec), var1 = SWAP$pH, 
+    var2 = sample(SWAP$pH), method = "randomTF", n = 99, r = 32, fun = WA, col = 1)
+    #nonsense second variable
 
 plot(rlgh.js, c("acid", "alkaline"), c("down", "up"))
 }

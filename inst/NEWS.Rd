@@ -2,6 +2,48 @@
 \title{palaeoSig News}
 \encoding{UTF-8}
 
+\section{Changes in version 1.1-3}{
+
+  \subsection{GENERAL}{
+    \itemize{
+      \item Bug fixes and minor improvement, merged package with age-depth functions and R implementation of Minchin's COMPAS. 
+      \item Changes to the namespace mean that the rioja package needs to be loaded explicitly before some of the function will work properly.
+      
+    }
+  } % end GENERAL
+  
+  \subsection{NEW FUNCTIONS}{
+    \itemize{      
+      \item \code{agelme}, \code{predict.agelme} and \code{plot.fittedAgelme} age-depth modelling functions from Heegaard et al (2005)
+      \item \code{coverage.plot} Diagnostic plot for reconstructions
+      \item \code{centipede.plot} Plot WA optima and tolerances
+      \item \code{make.env}, \code{species}, \code{make.env} Simulate species-environment relationships based on Minchin's (1983) compas.
+    }
+  } % end NEW FUNCTIONS
+
+  \subsection{REMOVED FUNCTIONS}{
+    \itemize{      
+      \item \code{rotate} No longer needed as gstat now takes geodesic distance.
+      \item \code{simulate.spatial} Was a wrapper for krige(), now easier to use krige() directly.
+    }
+  } % end NEW FUNCTIONS
+
+  \subsection{MODIFIED FUNCTIONS}{
+    \itemize{      
+      \item \code{randomTF} and \code{randomTFmm} bug when partialling reconstructions out fixed
+      
+    }
+  } % end NEW FUNCTIONS
+
+  \subsection{BUG FIXES}{
+    \itemize{      
+      \item \code{obs.cor} bug when species not in same order in calibration set and fossil data fixed.
+    }
+  } % end NEW FUNCTIONS
+
+}% end VERSTION 1.1-3
+  
+
 \section{Changes in version 1.1-2}{
 
   \subsection{GENERAL}{

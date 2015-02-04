@@ -34,7 +34,6 @@ function(fos,modelList,col, condition, ord=rda,...){#reconstruct random variable
           form<-formula(paste("fos~p+Condition(",paste(names(condition), collapse="+"),")"))
           r<-ord(form, data=condition)
        }
-       r<-ord(fos~p)
        r$CCA$tot.chi/r$tot.chi
   })
   preds<-lapply(obs,function(x)x$pred)

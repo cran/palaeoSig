@@ -108,6 +108,7 @@ The test of the weighted correlation between species optima and ordination axis 
 \code{\link{randomTF}}, \code{\link{WA}}, \code{\link{MAT}}, \code{\link{WAPLS}}, \code{\link{rda}}, \code{\link{cca}}
 }
 \examples{
+require(rioja)
 data(SWAP)
 data(RLGH)
 
