@@ -4,17 +4,16 @@
 \alias{plot.fittedAgelme}
 \title{Plots fitted agelme model and dates}
 \usage{
-\method{plot}{fittedAgelme}(x, main, xlab = "Depth",
-  ylab = "Calibrated Age", ...)
+\method{plot}{fittedAgelme}(x, main, xlab = "Depth", ylab = "Calibrated Age", ...)
 }
 \arguments{
 \item{x}{Fitted agelme model.}
 
 \item{main}{Title of the plot.}
 
-\item{xlab}{xlabel of the plot.}
+\item{xlab}{x axis label of the plot.}
 
-\item{ylab}{ylabel of the plot.}
+\item{ylab}{y axis label of the plot.}
 
 \item{\dots}{Other arguments to plot.}
 }
