@@ -7,19 +7,16 @@ knitr::opts_chunk$set(
 ## ---- message=FALSE-----------------------------------------------------------
 library(palaeoSig)
 library(rioja)
-library(sp)
+library(sf)
 library(gstat)
 library(dplyr)
 library(tibble)
 library(tidyr)
 library(purrr)
 library(ggplot2)
+theme_set(theme_bw())
 
-# suppress warnings from MAT about duplicate samples
-# (presumably 100% N. pachyderma)
-MAT <- function(...) {
-  suppressWarnings(rioja::MAT(...))
-}
+set.seed(42) # for reproducibility 
 
 ## ---- results='hide', warning=FALSE-------------------------------------------
 # load data
@@ -27,35 +24,44 @@ data(Atlantic)
 meta <- c("Core", "Latitude", "Longitude", "summ50")
 
 # N Atlantic
-N_Atlantic <- Atlantic %>%
-  filter(Latitude > 3)
-N_Atlantic_meta <- N_Atlantic %>%
-  select(one_of(meta)) %>%
+N_Atlantic <- Atlantic |>
+  filter(Latitude > 3) |> 
+  slice_sample(n = 300) # subsample for speed
+N_Atlantic_meta <- N_Atlantic |>
+  select(one_of(meta)) |>
   as.data.frame() # to keep rdist.earth happy
-N_Atlantic <- N_Atlantic %>%
+N_Atlantic <- N_Atlantic |>
   select(-one_of(meta))
 
 # S Atlantic
-S_Atlantic <- Atlantic %>%
+S_Atlantic <- Atlantic |>
   filter(Latitude < -3)
-S_Atlantic_meta <- S_Atlantic %>%
+S_Atlantic_meta <- S_Atlantic |>
   select(one_of(meta))
-S_Atlantic <- S_Atlantic %>%
+S_Atlantic <- S_Atlantic |>
   select(-one_of(meta))
+
+## convert N_Atlatic_meta to an sf object
+
+N_Atlantic_meta <- st_as_sf(
+  x = N_Atlantic_meta,
+  coords = c("Longitude", "Latitude"),
+  crs = 4326
+)
 
 
 # calculating distances among the sampled points in the
 # North Atlantic foraminifera data set
-geodist <- fields::rdist.earth(select(N_Atlantic_meta, Longitude, Latitude),
-  miles = FALSE
-)
+geodist <- st_distance(N_Atlantic_meta) |>
+  units::set_units("km") |>
+  units::set_units(NULL)
 
 # values of h for which h-block cross-validation is calculated
-threshs <- c(0.01, 100, 200, 400, 600, 800, 1000, 1500)
+threshs <- c(0.01, 300, 600, 900, 1200)
 
 # h-block cross-validation of the NA foraminifera dataset for
 # different values of h
-res_h <- map_dfr(threshs, function(h) {
+res_h <- map(threshs, function(h) {
   mod <- MAT(N_Atlantic, N_Atlantic_meta$summ50, k = 5, lean = FALSE)
   mod <- crossval(mod, cv.method = "h-block", h.dist = geodist, h.cutoff = h)
 
@@ -64,9 +70,10 @@ res_h <- map_dfr(threshs, function(h) {
     RMSE = performance(mod)$crossval["N05", "RMSE"],
     R2 = performance(mod)$crossval["N05", "R2"]
   )
-})
+}) |>
+  list_rbind()
 
-## ---- warning = FALSE, results = 'hide', tidy = TRUE--------------------------
+## ---- warning = FALSE, results = 'hide'---------------------------------------
 # Leave-one-out cross-validated RMSEP using MAT with k = 5
 round(res_h[1, "RMSE"], 2)
 # Predicting the South Atlantic test set
@@ -103,12 +110,9 @@ wa_resid <- residuals(modwa, cv = TRUE)
 detrended_resid <- resid(loess(wa_resid[, 1] ~ N_Atlantic_meta$summ50,
   span = 0.1
 ))
-# copy meta data and add coordinate system
-N_Atlantic_meta_c <- N_Atlantic_meta
-coordinates(N_Atlantic_meta_c) <- ~ Longitude + Latitude
-proj4string(N_Atlantic_meta_c) <- CRS("+proj=longlat +datum=WGS84")
+
 # variogram of the detrended residuals of the WA model
-v <- variogram(detrended_resid ~ 1, data = N_Atlantic_meta_c)
+v <- variogram(detrended_resid ~ 1, data = N_Atlantic_meta)
 # Fitting a spherical variogram (partial sill, range and nugget are
 # approximately estimated from the empirical variogram)
 vm <- fit.variogram(v, vgm(psill = 2, "Sph", range = 1500, nugget = 0.5))
@@ -116,26 +120,25 @@ plot(v, vm)
 
 ## ---- fig.cap = "Figure 3: Semi-variogram model (Matérn class) fitted to the North Atlantic summer sea temperature at 50 m depth."----
 # Estimate the variogram model for the environmental variable of interest
-ve <- variogram(summ50 ~ 1, data = N_Atlantic_meta_c)
+ve <- variogram(summ50 ~ 1, data = N_Atlantic_meta)
 vem <- fit.variogram(ve, vgm(40, "Mat", 5000, .1, kappa = 1.8))
 plot(ve, vem)
 
 # Simulating environmental variables
 sim <- krige(sim ~ 1,
-  locations = N_Atlantic_meta_c,
+  locations = N_Atlantic_meta,
   dummy = TRUE,
   nsim = 100,
-  beta = mean(N_Atlantic_meta[, "summ50"]),
+  beta = mean(N_Atlantic_meta$summ50),
   model = vem,
-  newdata = N_Atlantic_meta_c
+  newdata = N_Atlantic_meta
 )
 
-# convert spatialpointsdataframe back to a regular data.frame
-sim <- as.data.frame(sim) %>%
-  select(-Longitude, -Latitude)
+# convert back to a regular data.frame
+sim <- sim |>
+  st_drop_geometry()
 
 ## ---- message = FALSE, warning= FALSE,results='hide', fig.cap="Figure 4: Histogram of squared correlation coefficients between simulated variables and the environmental variable of interest."----
-
 # Function for h-block cross-validating several simulations at a time
 mat_h1 <- function(y, x, noanalogues, geodist, thresh) {
   if (!inherits(y, "dist")) {
@@ -173,13 +176,12 @@ so_squares <- apply(simhr, 2, function(x) {
 })
 
 ## ----message = FALSE, warning= FALSE,results='hide', fig.cap = "Figure 5: Scatterplot of squared correlation coefficients between simulated variables and the environmental variable of interest and transfer function r^2^."----
-
-simhr %>%
-  as.data.frame() %>%
-  set_names(threshs) %>%
-  mutate(sim_obs_r2 = sim_obs_r2) %>%
-  pivot_longer(cols = -sim_obs_r2, names_to = "h", values_to = "value") %>%
-  mutate(h = factor(h, levels = threshs)) %>%
+simhr |>
+  as.data.frame() |>
+  set_names(threshs) |>
+  mutate(sim_obs_r2 = sim_obs_r2) |>
+  pivot_longer(cols = -sim_obs_r2, names_to = "h", values_to = "value") |>
+  mutate(h = factor(h, levels = threshs)) |>
   ggplot(aes(x = sim_obs_r2, y = value)) +
   geom_point() +
   geom_abline() +
@@ -187,7 +189,7 @@ simhr %>%
   labs(x = "Simulated-observed environmental r²", y = "Transfer function r²")
 
 ## ----fig.cap =  "Figure 6: Relationship between the sum of squares between the two r^2^ as function of distance *h*."----
-tibble(threshs, so_squares) %>%
+tibble(threshs, so_squares) |>
   ggplot(aes(x = threshs, y = so_squares)) +
   geom_point() +
   labs(x = "h km", y = "Sum of squares")

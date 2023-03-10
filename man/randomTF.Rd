@@ -25,7 +25,7 @@ randomTF(
 
 \method{plot}{palaeoSig}(x, variable_names, top = 0.7, adj = c(0, 0.5), p_val = 0.05, ...)
 
-\method{autoplot}{palaeoSig}(x, variable_names, nbins = 20, top = 0.7, p_val = 0.05)
+\method{autoplot}{palaeoSig}(object, variable_names, nbins = 20, top = 0.7, p_val = 0.05, ...)
 }
 \arguments{
 \item{spp}{Data frame of modern training set species data, transformed as
@@ -44,7 +44,7 @@ Additional arguments to \code{fun} can be passed with \code{...}}
 
 \item{col}{Some transfer functions return more than one column of results,
 for example with different \code{\link[rioja]{WAPLS}} components.
-\code{col} selects which column to use.
+\code{col} selects which column of the reconstructions to use.
 See the relevant transfer function method help file.}
 
 \item{condition}{Optional data frame of reconstructions to partial out when
@@ -86,6 +86,8 @@ from \code{env} data.frame.}
 \item{adj}{Adjust the position that the environmental names are plotted at.}
 
 \item{p_val}{P value to draw a line vertical line at (with which=2)}
+
+\item{object}{Output from randomTF}
 
 \item{nbins}{integer giving number of bins for the histogram}
 }
@@ -137,6 +139,11 @@ This can be done with \code{make_models = TRUE} and then running
 \code{randomTF} again giving the resultant models to the \code{models}
 argument.
 \code{make_models} does not work with MAT.
+
+For some transfer function methods, including \code{WA}, the code can be made
+somewhat faster by coercing the modern and fossil species data to matrices
+(\code{spp <- as.matrix(spp)}), otherwise \code{WA} has to do this repeatedly.
+With \code{MAT}, this should not be done as it might cause an error.
 }
 \section{Functions}{
 \itemize{
@@ -157,7 +164,7 @@ data(SWAP)
 data(RLGH)
 rlghr <- randomTF(
   spp = sqrt(SWAP$spec), env = data.frame(pH = SWAP$pH),
-  fos = sqrt(RLGH$spec), n = 49, fun = WA, col = 1
+  fos = sqrt(RLGH$spec), n = 49, fun = WA, col = "WA.inv"
 )
 rlghr$sig
 plot(rlghr, "pH")
